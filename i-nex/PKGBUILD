@@ -1,47 +1,50 @@
-# Maintainer: eloaders <eloaders at linux dot pl>
+# Maintainer: FadeMind <fademind@gmail.com>
+# Contributor: eloaders <eloaders at linux dot pl>
 
 pkgname=i-nex
-pkgver=7.4.0.15.g766def2
+_gitname=I-Nex
+_gitcommit=08cd99f
+pkgver=7.6.0
 pkgrel=1
 pkgdesc="System information tool like hardinfo, sysinfo"
 arch=('i686' 'x86_64')
 url="http://i-nex.linux.pl/"
 license=('LGPL3')
-depends=('gambas3-runtime' 
-	 'gambas3-gb-image' 
-	 'gambas3-gb-form'
-         'gambas3-gb-desktop'
-         'gambas3-gb-qt4'
-         'python2' 
-         'libcpuid'
-         'xorg-server-utils' 
-         'lsb-release' 
-         'curl'
-         'procps-ng')
+depends=('gambas3-runtime'
+	'gambas3-gb-image'
+	'gambas3-gb-form'
+	'gambas3-gb-desktop'
+	'gambas3-gb-qt5'
+	'gambas3-gb-desktop-x11'
+	'python2'
+	'libcpuid'
+	'xorg-server-utils'
+	'lsb-release'
+	'curl'
+	'procps-ng')
 makedepends=('gambas3-devel' 'gcc' 'imagemagick' 'git')
-source=($pkgname::'git://github.com/eloaders/I-Nex.git')
-sha256sums=('SKIP')
+source=("git+https://github.com/eloaders/${_gitname}.git#commit=${_gitcommit}")
+md5sums=('SKIP')
 provides=('i-nex-git' 'i-nex-bzr' 'i-nex-dev')
 conflicts=('i-nex-git' 'i-nex-bzr' 'i-nex-dev')
+
 prepare() {
-  cd $pkgname
-  sed -i 's|python3$|python2|' pastebinit
-  # make it dynamic
-  sed -i -e 's|^STATIC.*|STATIC = false|' i-nex.mk
-  sed -i -e 's|^UDEV_RULES_DIR.*|UDEV_RULES_DIR = /lib/udev/rules.d|' i-nex.mk
-  cd I-Nex
-  autoreconf -i
+    cd ${_gitname}
+    sed -i 's|python3$|python2|' pastebinit
+    sed -i -e 's|^STATIC.*|STATIC = false|' i-nex.mk
+    sed -i -e 's|^UDEV_RULES_DIR.*|UDEV_RULES_DIR = /usr/lib/udev/rules.d|' i-nex.mk
+    cd ${_gitname}
+    autoreconf -i
 }
  
 build() {
-  cd $pkgname
-  cd I-Nex
-  ./configure --prefix=/usr
-  cd ..
-  make
+    cd ${_gitname}/${_gitname}
+    ./configure --prefix=/usr
+    cd ..
+    make
 }
  
 package() {
-  cd $pkgname
-  make install DESTDIR="$pkgdir"
+    cd ${_gitname}
+    make install DESTDIR="$pkgdir"
 }
